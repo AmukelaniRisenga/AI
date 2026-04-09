@@ -86,6 +86,8 @@ ANTHROPIC_API_KEY=sk-ant-...
 PORT=3001
 ```
 
+> For Netlify deployment, also add `ANTHROPIC_API_KEY` in your Netlify site settings under Environment variables.
+
 ### Run (development)
 
 ```bash

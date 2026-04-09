@@ -1,5 +1,5 @@
 export async function analyzeObject({ text, imageBase64, mimeType }) {
-  const res = await fetch('/.netlify/functions/analyze-object', {
+  const res = await fetch('/api/analyze-object', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text, imageBase64, mimeType }),
