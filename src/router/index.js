@@ -22,7 +22,6 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     : process.env.VUE_ROUTER_MODE === 'history'
       ? createWebHistory
       : createWebHashHistory
-  fetch("/.netlify/functions/interpret-command.js")
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),

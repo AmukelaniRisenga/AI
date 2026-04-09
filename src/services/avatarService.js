@@ -1,5 +1,5 @@
 export async function interpretCommand(command) {
-  const res = await fetch('/api/interpret-command', {
+  const res = await fetch('/.netlify/functions/interpret-command', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ command }),
