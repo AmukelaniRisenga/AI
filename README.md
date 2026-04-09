@@ -112,6 +112,8 @@ The repo includes `netlify.toml` configured for automatic deployment:
 3. Set the `ANTHROPIC_API_KEY` environment variable in Netlify → Site settings → Environment variables
 4. Deploy — Netlify builds the SPA and wires `/api/*` routes to serverless functions automatically
 
+To verify the deployed function environment, visit `/api/env-debug` on your site. It will show whether `ANTHROPIC_API_KEY` is present without exposing the secret.
+
 ---
 
 ## APIs Used
