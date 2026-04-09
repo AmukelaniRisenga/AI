@@ -20,7 +20,7 @@ export function useThreeScene(canvasRef) {
     })
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.shadowMap.type = THREE.PCFShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
     scene.background = new THREE.Color(bgColor)
 
