@@ -1,7 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
 const VALID_MODEL_KEYS = [
   'hard-hat',
   'fire-extinguisher',
@@ -23,6 +21,8 @@ export async function handler(event) {
         body: JSON.stringify({ error: 'Missing ANTHROPIC_API_KEY in environment' }),
       }
     }
+
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
     const body = JSON.parse(event.body || '{}')
     const { text, imageBase64, mimeType } = body

@@ -1,7 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
 const VALID_ANIMATIONS = [
   'idle',
   'wave',
@@ -21,6 +19,8 @@ export async function handler(event) {
         body: JSON.stringify({ error: 'Missing ANTHROPIC_API_KEY in environment' }),
       }
     }
+
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
     const { command } = JSON.parse(event.body || '{}')
 
