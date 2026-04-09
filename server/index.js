@@ -15,6 +15,16 @@ app.post('/api/interpret-command', interpretCommand)
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }))
 
+if (process.env.NODE_ENV === 'development') {
+  app.get('/api/env-debug', (_req, res) => {
+    return res.json({
+      ANTHROPIC_API_KEY_SET: Boolean(process.env.ANTHROPIC_API_KEY),
+      NODE_ENV: process.env.NODE_ENV,
+      PORT: process.env.PORT || 3001,
+    })
+  })
+}
+
 app.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`)
 })
