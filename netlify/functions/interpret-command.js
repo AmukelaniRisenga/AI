@@ -15,6 +15,13 @@ const VALID_ANIMATIONS = [
 
 export async function handler(event) {
   try {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Missing ANTHROPIC_API_KEY in environment' }),
+      }
+    }
+
     const { command } = JSON.parse(event.body || '{}')
 
     if (!command || typeof command !== 'string') {
@@ -41,7 +48,11 @@ explanation must be 1-2 sentences describing what the avatar is doing and why it
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const raw = message.content[0].text.trim()
+    const raw = (() => {
+      if (typeof message?.content === 'string') return message.content.trim()
+      if (Array.isArray(message?.content) && message.content[0]?.text) return message.content[0].text.trim()
+      throw new Error(`Unexpected Anthropic response shape: ${JSON.stringify(message)}`)
+    })()
     const jsonStr = raw.replace(/^```json?\s*/i, '').replace(/```\s*$/i, '').trim()
     const parsed = JSON.parse(jsonStr)
 

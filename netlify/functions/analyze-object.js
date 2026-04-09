@@ -17,6 +17,13 @@ const VALID_MODEL_KEYS = [
 
 export async function handler(event) {
   try {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Missing ANTHROPIC_API_KEY in environment' }),
+      }
+    }
+
     const body = JSON.parse(event.body || '{}')
     const { text, imageBase64, mimeType } = body
 
@@ -67,7 +74,11 @@ If unsure, use "default-box".`
       messages: [{ role: 'user', content }],
     })
 
-    const raw = message.content[0].text.trim()
+    const raw = (() => {
+      if (typeof message?.content === 'string') return message.content.trim()
+      if (Array.isArray(message?.content) && message.content[0]?.text) return message.content[0].text.trim()
+      throw new Error(`Unexpected Anthropic response shape: ${JSON.stringify(message)}`)
+    })()
     const jsonStr = raw.replace(/^```json?\s*/i, '').replace(/```\s*$/i, '').trim()
     const parsed = JSON.parse(jsonStr)
 
