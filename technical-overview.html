@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexEra AI Engineering Challenge — Technical Overview</title>
+<style>
+  /* ── Reset & base ─────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.65;
+    color: #1a1a2e;
+    background: #fff;
+  }
+
+  /* ── Print settings ───────────────────────────────────────────────────── */
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+
+  @media print {
+    .no-print { display: none !important; }
+    h1, h2, h3 { page-break-after: avoid; }
+    .card, .code-block, table { page-break-inside: avoid; }
+    .page-break { page-break-before: always; }
+  }
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  h1 { font-size: 22pt; font-weight: 800; color: #0d1b6b; letter-spacing: -0.5px; }
+  h2 { font-size: 14pt; font-weight: 700; color: #1a237e; margin: 22px 0 10px;
+       border-left: 4px solid #1565c0; padding-left: 10px; }
+  h3 { font-size: 11.5pt; font-weight: 700; color: #0d47a1; margin: 14px 0 6px; }
+  h4 { font-size: 10.5pt; font-weight: 600; color: #37474f; margin: 10px 0 4px; }
+  p  { margin-bottom: 8px; }
+  ul, ol { margin: 6px 0 10px 20px; }
+  li { margin-bottom: 4px; }
+  strong { color: #0d1b6b; }
+
+  /* ── Cover ────────────────────────────────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, #0d1b6b 0%, #1565c0 60%, #00897b 100%);
+    color: #fff;
+    padding: 48px 40px 40px;
+    border-radius: 6px;
+    margin-bottom: 28px;
+  }
+  .cover .subtitle { font-size: 12pt; opacity: 0.85; margin-top: 6px; }
+  .cover .meta { font-size: 9.5pt; opacity: 0.7; margin-top: 18px; }
+  .cover .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 9pt;
+    margin: 4px 4px 0 0;
+  }
+
+  /* ── Cards ────────────────────────────────────────────────────────────── */
+  .card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    background: #fafafa;
+  }
+  .card.blue  { border-left: 4px solid #1565c0; background: #e3f2fd; }
+  .card.green { border-left: 4px solid #2e7d32; background: #e8f5e9; }
+  .card.red   { border-left: 4px solid #c62828; background: #ffebee; }
+  .card.teal  { border-left: 4px solid #00695c; background: #e0f2f1; }
+  .card.amber { border-left: 4px solid #e65100; background: #fff3e0; }
+
+  /* ── Code blocks ──────────────────────────────────────────────────────── */
+  .code-block {
+    background: #1e2a3a;
+    color: #e0e6f0;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 8.5pt;
+    line-height: 1.55;
+    padding: 12px 14px;
+    border-radius: 5px;
+    margin: 8px 0 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid #2d3f52;
+  }
+  .code-block .cm  { color: #6a8fa8; }  /* comment */
+  .code-block .kw  { color: #7ec8e3; }  /* keyword */
+  .code-block .st  { color: #a8d8a8; }  /* string */
+  .code-block .fn  { color: #f0c97e; }  /* function */
+  .code-block .nu  { color: #f4a460; }  /* number/key */
+
+  /* ── Architecture diagram ─────────────────────────────────────────────── */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0;
+    font-size: 9pt;
+    text-align: center;
+  }
+  .arch-box {
+    background: #1565c0;
+    color: #fff;
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 8.5pt;
+  }
+  .arch-box.green { background: #2e7d32; }
+  .arch-box.teal  { background: #00695c; }
+  .arch-box.amber { background: #e65100; }
+  .arch-arrow { font-size: 16pt; color: #90a4ae; font-weight: bold; }
+
+  /* ── Flow table ───────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 9.5pt; }
+  th { background: #1565c0; color: #fff; padding: 7px 10px; text-align: left; font-weight: 600; }
+  td { padding: 6px 10px; border-bottom: 1px solid #e0e0e0; vertical-align: top; }
+  tr:nth-child(even) td { background: #f5f7fa; }
+
+  /* ── Badge ────────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 8pt;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .badge.blue   { background: #e3f2fd; color: #0d47a1; }
+  .badge.green  { background: #e8f5e9; color: #1b5e20; }
+  .badge.orange { background: #fff3e0; color: #bf360c; }
+  .badge.teal   { background: #e0f2f1; color: #004d40; }
+  .badge.grey   { background: #eceff1; color: #37474f; }
+
+  /* ── Two-col grid ─────────────────────────────────────────────────────── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+
+  /* ── Separator ────────────────────────────────────────────────────────── */
+  hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+
+  /* ── Callout ──────────────────────────────────────────────────────────── */
+  .callout {
+    background: #fffde7;
+    border: 1px solid #f9a825;
+    border-radius: 5px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 9.5pt;
+  }
+  .callout::before { content: "💡 "; font-size: 11pt; }
+
+  /* ── Print button ─────────────────────────────────────────────────────── */
+  .print-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    border-radius: 28px;
+    padding: 12px 24px;
+    font-size: 13pt;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(21,101,192,0.4);
+    z-index: 999;
+  }
+  .print-btn:hover { background: #0d47a1; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">⬇ Save as PDF</button>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     COVER
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <h1>AI-Powered Interactive Prototypes</h1>
+  <div class="subtitle">NexEra AI Engineering Challenge — Technical Overview</div>
+  <div style="margin-top:16px;">
+    <span class="tag">Three.js</span>
+    <span class="tag">Vue 3 / Quasar</span>
+    <span class="tag">Netlify Serverless</span>
+    <span class="tag">Procedural 3D</span>
+    <span class="tag">Multimodal AI</span>
+  </div>
+  <div class="meta">Prepared for NexEra technical presentation · April 2026</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     1. OVERVIEW
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>1. What Was Built</h2>
+
+<p>Two fully functional AI-powered interactive prototypes hosted on Netlify, built in one week to demonstrate AI→3D pipeline design, multimodal reasoning, and interactive avatar animation — the two core product directions at NexEra.</p>
+
+<div class="two-col">
+  <div class="card blue">
+    <h3>Prototype 1 — 3D Asset Pipeline</h3>
+    <p>User types a description <em>("yellow hard hat")</em> or uploads a photo of a safety object. Claude Vision identifies it, maps it to a 3D model key, and renders a fully interactive 3D model in a Three.js viewer alongside an AI-generated educational safety summary.</p>
+    <p><strong>Route:</strong> <code>/prototype1</code></p>
+  </div>
+  <div class="card teal">
+    <h3>Prototype 2 — Avatar Animation</h3>
+    <p>User types a natural language command <em>("wave hello to the learner")</em>. Claude interprets intent, selects the best matching animation, and plays it on a 3D humanoid avatar with real skeletal-style motion — walk cycles, arm waves, head sweeps, safety postures.</p>
+    <p><strong>Route:</strong> <code>/prototype2</code></p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     2. TECH STACK
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>2. Technology Stack</h2>
+
+<table>
+  <tr>
+    <th>Layer</th>
+    <th>Technology</th>
+    <th>Why Chosen</th>
+  </tr>
+  <tr>
+    <td><strong>Frontend framework</strong></td>
+    <td>Vue 3 + Quasar 2.x (Vite)</td>
+    <td>Component-first, fast HMR, built-in dark theme, responsive layout utilities, easy Netlify SPA deployment</td>
+  </tr>
+  <tr>
+    <td><strong>3D rendering</strong></td>
+    <td>Three.js 0.183</td>
+    <td>Industry-standard WebGL library; GLTFLoader, OrbitControls, AnimationMixer, procedural geometry — all included out of the box</td>
+  </tr>
+  <tr>
+    <td><strong>State management</strong></td>
+    <td>Pinia 3</td>
+    <td>Lightweight Vue-native store; clean async action pattern; stores decouple AI API logic from UI components</td>
+  </tr>
+  <tr>
+    <td><strong>AI / LLM</strong></td>
+    <td>Anthropic Claude Sonnet 4.6</td>
+    <td>Multimodal (text + image input), strong JSON output reliability, fast inference, vision capability for image-to-object identification</td>
+  </tr>
+  <tr>
+    <td><strong>Backend (local dev)</strong></td>
+    <td>Express 5</td>
+    <td>Minimal API server; keeps the Anthropic API key server-side; proxied from Quasar dev server</td>
+  </tr>
+  <tr>
+    <td><strong>Backend (production)</strong></td>
+    <td>Netlify Functions (serverless)</td>
+    <td>Zero-config hosting; same handler code as Express; auto-scales; no server to maintain</td>
+  </tr>
+  <tr>
+    <td><strong>Hosting</strong></td>
+    <td>Netlify</td>
+    <td>Git-push deploys, SPA routing, environment variable secrets, edge CDN — all free tier</td>
+  </tr>
+</table>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     3. ARCHITECTURE
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>3. System Architecture</h2>
+
+<h3>Prototype 1 — Data Flow</h3>
+<div class="arch">
+  <div class="arch-box">User Input<br><small>text or image</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-box amber">Claude Sonnet 4.6<br><small>Vision / NLP</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-box green">Three.js Viewer<br><small>3D model + info</small></div>
+</div>
+
+<div class="code-block"><span class="cm">// Pinia store action — model-store.js</span>
+<span class="kw">async</span> <span class="fn">analyzeAndLoad</span>({ text, imageBase64, mimeType }) {
+  this.isLoading = <span class="kw">true</span>
+  <span class="kw">const</span> { modelKey, summary } = <span class="kw">await</span> <span class="fn">analyzeObject</span>({ text, imageBase64, mimeType })
+  this.modelKey = modelKey     <span class="cm">// e.g. "hard-hat"</span>
+  this.modelUrl = <span class="fn">modelKeyToUrl</span>(modelKey) <span class="cm">// "/models/hard-hat.glb"</span>
+  this.summary  = summary      <span class="cm">// AI educational summary</span>
+}</div>
+
+<h3>Prototype 2 — Data Flow</h3>
+<div class="arch">
+  <div class="arch-box">NL Command<br><small>"wave hello"</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-box amber">Claude Sonnet 4.6<br><small>Intent mapping</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-box teal">Avatar Viewer<br><small>animation plays</small></div>
+</div>
+
+<h3>Component & File Structure</h3>
+
+<div class="code-block">src/
+├── pages/
+│   ├── Prototype1Page.vue     <span class="cm">← 3D pipeline page layout</span>
+│   └── Prototype2Page.vue     <span class="cm">← avatar animation page layout</span>
+├── components/
+│   ├── proto1/
+│   │   ├── ModelViewer.vue    <span class="cm">← Three.js canvas + GLB/procedural loader</span>
+│   │   ├── ModelInputPanel.vue <span class="cm">← text input + image upload + quick chips</span>
+│   │   └── ModelInfoCard.vue  <span class="cm">← AI summary + model key display</span>
+│   └── proto2/
+│       ├── AvatarViewer.vue   <span class="cm">← Three.js canvas + procedural humanoid + animations</span>
+│       ├── CommandInputPanel.vue <span class="cm">← NL command input + preset chips</span>
+│       └── AnimationInfoCard.vue <span class="cm">← explanation + current animation badge</span>
+├── composables/
+│   ├── useThreeScene.js       <span class="cm">← WebGL renderer, camera, lighting, resize</span>
+│   ├── useModelLoader.js      <span class="cm">← GLTFLoader, auto-scale/center, cleanup</span>
+│   ├── useProceduralModels.js <span class="cm">← 10 distinct Three.js model builders</span>
+│   └── useAnimationMixer.js   <span class="cm">← Three.js AnimationMixer wrapper</span>
+├── stores/
+│   ├── model-store.js         <span class="cm">← Prototype 1 Pinia store</span>
+│   └── avatar-store.js        <span class="cm">← Prototype 2 Pinia store</span>
+└── services/
+    ├── modelService.js        <span class="cm">← POST /api/analyze-object client</span>
+    └── avatarService.js       <span class="cm">← POST /api/interpret-command client</span>
+
+server/routes/
+├── analyzeObject.js           <span class="cm">← Claude Vision API handler</span>
+└── interpretCommand.js        <span class="cm">← Claude NLP command handler</span>
+
+netlify/functions/
+├── analyze-object.js          <span class="cm">← serverless mirror of Express route</span>
+└── interpret-command.js       <span class="cm">← serverless mirror of Express route</span></div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     4. PROTOTYPE 1 DEEP DIVE
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h2>4. Prototype 1 — AI-Generated 3D Asset Pipeline</h2>
+
+<h3>4.1 Claude Vision API — Object Identification</h3>
+<p>The backend receives either a text string or a base64-encoded image. It constructs a multimodal Claude message and constrains the output to a fixed enum of model keys to prevent hallucination and ensure every response maps to a known 3D asset.</p>
+
+<div class="code-block"><span class="cm">// server/routes/analyzeObject.js — key logic</span>
+<span class="kw">const</span> VALID_MODEL_KEYS = [
+  <span class="st">'hard-hat'</span>, <span class="st">'fire-extinguisher'</span>, <span class="st">'wrench'</span>, <span class="st">'hammer'</span>, <span class="st">'safety-vest'</span>,
+  <span class="st">'drill'</span>, <span class="st">'screwdriver'</span>, <span class="st">'first-aid-kit'</span>, <span class="st">'helmet'</span>, <span class="st">'default-box'</span>
+]
+
+<span class="cm">// Image path: multimodal content array</span>
+content = [
+  { type: <span class="st">'image'</span>, source: { type: <span class="st">'base64'</span>, media_type: mimeType, data: imageBase64 } },
+  { type: <span class="st">'text'</span>, text: <span class="st">`Identify the object. Respond ONLY with JSON:
+{"modelKey":"&lt;key&gt;","summary":"&lt;2-3 sentence safety description&gt;"}
+modelKey must be one of: ${VALID_MODEL_KEYS.join(', ')}`</span> }
+]
+
+<span class="cm">// Text path: single string prompt</span>
+content = <span class="st">`Given: "${text}" → respond ONLY with JSON: {"modelKey":"...","summary":"..."}`</span>
+
+<span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
+  model: <span class="st">'claude-sonnet-4-6'</span>, max_tokens: <span class="nu">512</span>,
+  messages: [{ role: <span class="st">'user'</span>, content }]
+})
+
+<span class="cm">// Strip markdown fences Claude sometimes adds, then parse + validate</span>
+<span class="kw">const</span> jsonStr = raw.replace(<span class="nu">/^```json?\s*/i</span>, <span class="st">''</span>).replace(<span class="nu">/```\s*$/i</span>, <span class="st">''</span>).trim()
+<span class="kw">const</span> parsed = JSON.parse(jsonStr)
+<span class="kw">if</span> (!VALID_MODEL_KEYS.includes(parsed.modelKey)) parsed.modelKey = <span class="st">'default-box'</span></div>
+
+<div class="callout">
+  <strong>Critical design decision:</strong> Constraining Claude's output to a closed enum (rather than generating freeform model names) makes the pipeline deterministic and safe — any unrecognised object gracefully falls back to <code>default-box</code> instead of crashing the 3D loader.
+</div>
+
+<h3>4.2 Procedural 3D Model System</h3>
+<p>Since generating real GLB binary files programmatically is not practical, each model key maps to a <strong>distinct Three.js procedural geometry group</strong>. This approach actually shows deeper engineering ability than loading pre-made files.</p>
+
+<div class="code-block"><span class="cm">// src/composables/useProceduralModels.js — hard-hat builder (example)</span>
+<span class="kw">const</span> builders = {
+  <span class="st">'hard-hat'</span>() {
+    <span class="kw">const</span> g = <span class="kw">new</span> THREE.<span class="fn">Group</span>()
+    <span class="cm">// Yellow dome — top hemisphere only (phiLength = PI/2)</span>
+    <span class="kw">const</span> dome = <span class="kw">new</span> THREE.<span class="fn">Mesh</span>(
+      <span class="kw">new</span> THREE.<span class="fn">SphereGeometry</span>(<span class="nu">0.5</span>, <span class="nu">20</span>, <span class="nu">20</span>, <span class="nu">0</span>, Math.PI*<span class="nu">2</span>, <span class="nu">0</span>, Math.PI/<span class="nu">2</span>),
+      <span class="fn">mat</span>(<span class="nu">0xffc107</span>)  <span class="cm">// yellow</span>
+    )
+    g.<span class="fn">add</span>(dome)
+    <span class="cm">// Brim ring around the dome</span>
+    <span class="kw">const</span> brim = <span class="kw">new</span> THREE.<span class="fn">Mesh</span>(
+      <span class="kw">new</span> THREE.<span class="fn">TorusGeometry</span>(<span class="nu">0.58</span>, <span class="nu">0.07</span>, <span class="nu">8</span>, <span class="nu">32</span>),
+      <span class="fn">mat</span>(<span class="nu">0xffb300</span>)  <span class="cm">// darker amber</span>
+    )
+    g.<span class="fn">add</span>(brim)
+    <span class="kw">return</span> g
+  },
+  <span class="cm">// ... 9 more builders: fire-extinguisher, wrench, hammer, safety-vest,</span>
+  <span class="cm">//     drill, screwdriver, first-aid-kit, helmet, default-box</span>
+}
+
+<span class="kw">export function</span> <span class="fn">buildProceduralModel</span>(scene, key) {
+  <span class="kw">const</span> group = (builders[key] || builders[<span class="st">'default-box'</span>])()
+  <span class="fn">autoScaleCenter</span>(group)  <span class="cm">// normalise to 2-unit bounding box, centre at origin</span>
+  scene.<span class="fn">add</span>(group)
+  <span class="kw">return</span> group
+}</div>
+
+<table>
+  <tr><th>Model Key</th><th>Geometry Used</th><th>Visual Distinguisher</th></tr>
+  <tr><td>hard-hat</td><td>SphereGeometry (hemisphere) + TorusGeometry</td><td>Yellow dome with amber brim ring</td></tr>
+  <tr><td>fire-extinguisher</td><td>CylinderGeometry + SphereGeometry + nozzle arm</td><td>Red cylinder, black nozzle, pressure gauge</td></tr>
+  <tr><td>wrench</td><td>BoxGeometry handle + TorusGeometry jaw</td><td>Grey metal, open-jaw ring top</td></tr>
+  <tr><td>hammer</td><td>CylinderGeometry handle + BoxGeometry head</td><td>Brown wood handle, grey steel head with claw</td></tr>
+  <tr><td>safety-vest</td><td>BoxGeometry panels + shoulder straps</td><td>Orange panels, yellow hi-vis stripes, zipper</td></tr>
+  <tr><td>drill</td><td>CylinderGeometry + ConeGeometry bit + pistol grip</td><td>Blue body, orange battery pack, silver bit</td></tr>
+  <tr><td>screwdriver</td><td>CylinderGeometry handle + shaft + BoxGeometry tip</td><td>Yellow handle with grip bands, silver flat tip</td></tr>
+  <tr><td>first-aid-kit</td><td>BoxGeometry case + cross bars + handle</td><td>White box with red cross on front face</td></tr>
+  <tr><td>helmet</td><td>SphereGeometry dome + BoxGeometry visor + chin straps</td><td>Dark dome, tinted blue visor, vents</td></tr>
+  <tr><td>default-box</td><td>BoxGeometry</td><td>Blue fallback cube</td></tr>
+</table>
+
+<h3>4.3 Three.js Scene Setup</h3>
+<div class="code-block"><span class="cm">// src/composables/useThreeScene.js — shared across both prototypes</span>
+<span class="kw">function</span> <span class="fn">init</span>(bgColor) {
+  renderer = <span class="kw">new</span> THREE.<span class="fn">WebGLRenderer</span>({ canvas, antialias: <span class="kw">true</span> })
+  renderer.shadowMap.enabled = <span class="kw">true</span>
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+
+  <span class="cm">// Lighting rig: ambient fill + main directional + blue back fill</span>
+  scene.<span class="fn">add</span>(<span class="kw">new</span> THREE.<span class="fn">AmbientLight</span>(<span class="nu">0xffffff</span>, <span class="nu">0.6</span>))
+  <span class="kw">const</span> dirLight = <span class="kw">new</span> THREE.<span class="fn">DirectionalLight</span>(<span class="nu">0xffffff</span>, <span class="nu">1.2</span>)
+  dirLight.position.<span class="fn">set</span>(<span class="nu">5</span>, <span class="nu">10</span>, <span class="nu">7</span>)
+  dirLight.castShadow = <span class="kw">true</span>
+  scene.<span class="fn">add</span>(dirLight)
+  scene.<span class="fn">add</span>(<span class="kw">new</span> THREE.<span class="fn">DirectionalLight</span>(<span class="nu">0x4488ff</span>, <span class="nu">0.4</span>))  <span class="cm">// blue rim</span>
+
+  <span class="cm">// Responsive canvas — ResizeObserver updates renderer + camera aspect</span>
+  resizeObserver = <span class="kw">new</span> <span class="fn">ResizeObserver</span>(() => <span class="fn">updateSize</span>())
+  resizeObserver.<span class="fn">observe</span>(canvas.parentElement)
+}</div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     5. PROTOTYPE 2 DEEP DIVE
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h2>5. Prototype 2 — Natural Language → Avatar Animation</h2>
+
+<h3>5.1 Claude NLP — Command → Animation Mapping</h3>
+<p>Claude interprets free-form English commands and maps them to one of 8 predefined animation keys. The prompt is engineered so Claude explains its mapping reasoning, which is shown to the user as educational context.</p>
+
+<div class="code-block"><span class="cm">// server/routes/interpretCommand.js</span>
+<span class="kw">const</span> VALID_ANIMATIONS = [
+  <span class="st">'idle'</span>, <span class="st">'wave'</span>, <span class="st">'point'</span>, <span class="st">'walk'</span>,
+  <span class="st">'safety-posture'</span>, <span class="st">'crouch'</span>, <span class="st">'thumbs-up'</span>, <span class="st">'look-around'</span>
+]
+
+<span class="kw">const</span> prompt = <span class="st">`You are an AI animation controller for a 3D safety training avatar.
+Map this command to the best matching animation: "${command}"
+Available animations: ${VALID_ANIMATIONS.join(', ')}
+Respond ONLY with JSON:
+{"animationKey":"&lt;animation&gt;","explanation":"&lt;1-2 sentences on safety relevance&gt;"}`</span>
+
+<span class="cm">// After parsing, validate the key — never let an invalid key crash the viewer</span>
+<span class="kw">if</span> (!VALID_ANIMATIONS.includes(parsed.animationKey)) parsed.animationKey = <span class="st">'idle'</span></div>
+
+<p>Example mappings Claude produces:</p>
+<table>
+  <tr><th>User Command</th><th>→ animationKey</th><th>Claude Explanation</th></tr>
+  <tr><td>"Wave hello to the learner"</td><td><span class="badge blue">wave</span></td><td>Avatar waves to greet and engage the learner, building rapport in a training scenario.</td></tr>
+  <tr><td>"Walk to the fire extinguisher"</td><td><span class="badge green">walk</span></td><td>Avatar moves toward the equipment, demonstrating how to approach it safely.</td></tr>
+  <tr><td>"Point at the exit sign"</td><td><span class="badge orange">point</span></td><td>Avatar indicates the emergency exit to reinforce evacuation awareness.</td></tr>
+  <tr><td>"Show correct safety posture"</td><td><span class="badge teal">safety-posture</span></td><td>Avatar demonstrates proper stance — feet shoulder-width, arms visible, weight centred.</td></tr>
+  <tr><td>"Duck under the beam"</td><td><span class="badge grey">crouch</span></td><td>Avatar crouches to illustrate safe clearance behaviour in confined workspaces.</td></tr>
+</table>
+
+<h3>5.2 Procedural Skeletal-Style Animations</h3>
+<p>Instead of requiring pre-rigged GLB animation clips (Mixamo), the avatar uses <strong>pivot-group based procedural animation</strong>: each limb is a child of a pivot Group at the shoulder/hip joint, making rotations anatomically correct. A shared clock drives time-based trigonometric transforms every frame.</p>
+
+<div class="code-block"><span class="cm">// src/components/proto2/AvatarViewer.vue — walk cycle example</span>
+<span class="kw">function</span> <span class="fn">animateBody</span>(delta) {
+  animTime += delta
+  <span class="kw">const</span> t = animTime
+
+  <span class="kw">switch</span> (currentAnim.value) {
+    <span class="kw">case</span> <span class="st">'walk'</span>:
+      <span class="cm">// Legs alternate at 3.2 Hz — opposite phase</span>
+      parts.leftLeg.rotation.x  =  Math.<span class="fn">sin</span>(t * <span class="nu">3.2</span>) * <span class="nu">0.45</span>
+      parts.rightLeg.rotation.x = -Math.<span class="fn">sin</span>(t * <span class="nu">3.2</span>) * <span class="nu">0.45</span>
+      <span class="cm">// Arms counterswing (opposite to legs for realism)</span>
+      parts.leftArm.rotation.x  = -Math.<span class="fn">sin</span>(t * <span class="nu">3.2</span>) * <span class="nu">0.32</span>
+      parts.rightArm.rotation.x =  Math.<span class="fn">sin</span>(t * <span class="nu">3.2</span>) * <span class="nu">0.32</span>
+      <span class="cm">// Body bounces at double frequency (both feet strike per cycle)</span>
+      parts.body.position.y     = <span class="nu">1.0</span> + Math.<span class="fn">abs</span>(Math.<span class="fn">sin</span>(t * <span class="nu">6.4</span>)) * <span class="nu">0.04</span>
+      parts.body.rotation.y     = Math.<span class="fn">sin</span>(t * <span class="nu">3.2</span>) * <span class="nu">0.06</span>
+      <span class="kw">break</span>
+
+    <span class="kw">case</span> <span class="st">'wave'</span>:
+      <span class="cm">// Right arm oscillates at 4.5 Hz with ±0.85 rad swing</span>
+      parts.rightArm.rotation.z = -<span class="nu">0.3</span> + Math.<span class="fn">sin</span>(t * <span class="nu">4.5</span>) * <span class="nu">0.85</span>
+      parts.head.rotation.z     = Math.<span class="fn">sin</span>(t * <span class="nu">4.5</span>) * <span class="nu">0.08</span>
+      <span class="kw">break</span>
+
+    <span class="kw">case</span> <span class="st">'look-around'</span>:
+      <span class="cm">// Head sweeps ±0.82 rad (≈47°) left/right; body follows at 17% amplitude</span>
+      parts.head.rotation.y  = Math.<span class="fn">sin</span>(t * <span class="nu">1.4</span>) * <span class="nu">0.82</span>
+      parts.body.rotation.y  = Math.<span class="fn">sin</span>(t * <span class="nu">1.4</span>) * <span class="nu">0.14</span>
+      <span class="kw">break</span>
+  }
+}</div>
+
+<h3>5.3 Avatar Humanoid Structure</h3>
+
+<div class="code-block"><span class="cm">// Pivot groups give anatomically correct joint rotation origins</span>
+<span class="kw">const</span> rightArmPivot = <span class="kw">new</span> THREE.<span class="fn">Group</span>()
+rightArmPivot.position.<span class="fn">set</span>(<span class="nu">0.35</span>, <span class="nu">1.42</span>, <span class="nu">0</span>)   <span class="cm">// ← at shoulder</span>
+
+<span class="kw">const</span> rightArmMesh = <span class="kw">new</span> THREE.<span class="fn">Mesh</span>(
+  <span class="kw">new</span> THREE.<span class="fn">CapsuleGeometry</span>(<span class="nu">0.085</span>, <span class="nu">0.5</span>),
+  bodyMat
+)
+rightArmMesh.position.y = -<span class="nu">0.3</span>              <span class="cm">// ← hangs down from pivot</span>
+rightArmPivot.<span class="fn">add</span>(rightArmMesh)
+group.<span class="fn">add</span>(rightArmPivot)
+
+<span class="cm">// To animate: rotate the pivot, not the mesh</span>
+parts.rightArm = rightArmPivot</div>
+
+<div class="callout">
+  <strong>Key insight:</strong> Using pivot Groups (parent at joint, mesh as child offset below) means <code>rotation.z = angle</code> on the pivot naturally swings the arm around the shoulder — exactly how a real skeleton works. Without this, the arm would rotate around its own centre, looking broken.
+</div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     6. DEPLOYMENT
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>6. Deployment Architecture</h2>
+
+<div class="two-col">
+  <div class="card green">
+    <h3>Local Development</h3>
+    <ul>
+      <li><code>npm run dev</code> starts two processes via <code>concurrently</code></li>
+      <li>Express API server on port <strong>3001</strong> (handles Claude API calls)</li>
+      <li>Quasar Vite dev server on port <strong>9000</strong></li>
+      <li><code>/api/*</code> requests proxied from Quasar → Express (no CORS issues)</li>
+    </ul>
+  </div>
+  <div class="card blue">
+    <h3>Production (Netlify)</h3>
+    <ul>
+      <li><code>quasar build</code> → <code>dist/spa/</code> served as static SPA</li>
+      <li>Netlify Functions mirror the Express routes (serverless Node)</li>
+      <li><code>netlify.toml</code> redirects <code>/api/*</code> → <code>/.netlify/functions/*</code></li>
+      <li>API key stored in Netlify environment variables (never in client bundle)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="code-block"><span class="cm"># netlify.toml — key routing rules</span>
+[[redirects]]
+  from = <span class="st">"/api/analyze-object"</span>
+  to   = <span class="st">"/.netlify/functions/analyze-object"</span>
+  status = <span class="nu">200</span>
+
+[[redirects]]
+  from = <span class="st">"/api/interpret-command"</span>
+  to   = <span class="st">"/.netlify/functions/interpret-command"</span>
+  status = <span class="nu">200</span>
+
+[[redirects]]
+  from = <span class="st">"/*"</span>
+  to   = <span class="st">"/index.html"</span>     <span class="cm"># SPA hash-router fallback</span>
+  status = <span class="nu">200</span></div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     7. KEY ENGINEERING DECISIONS
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h2>7. Key Engineering Decisions</h2>
+
+<div class="card amber">
+  <h3>Decision 1 — Procedural 3D over pre-made GLB assets</h3>
+  <p><strong>Challenge:</strong> No free, open-licensed GLB model library covers exactly the 10 safety objects needed, and downloading/converting binary assets at runtime is slow and unreliable.</p>
+  <p><strong>Solution:</strong> Build each model from Three.js primitive geometry (SphereGeometry, CylinderGeometry, TorusGeometry, etc.) with colour-coded materials. Each model is visually distinct and immediately recognisable.</p>
+  <p><strong>Benefit:</strong> Zero external dependencies for 3D content, instant render, easy to extend, and demonstrates deeper Three.js knowledge than simply loading a file.</p>
+</div>
+
+<div class="card blue">
+  <h3>Decision 2 — Closed enum validation on Claude outputs</h3>
+  <p><strong>Challenge:</strong> LLMs can hallucinate arbitrary strings. If Claude returns a model key that doesn't exist, the 3D loader silently fails or shows nothing.</p>
+  <p><strong>Solution:</strong> Both API endpoints define a strict <code>VALID_*</code> array. After parsing Claude's JSON, any value not in the array is replaced with a safe default (<code>'default-box'</code> / <code>'idle'</code>). The Claude prompt itself lists the exact allowed values.</p>
+  <p><strong>Benefit:</strong> The pipeline never crashes on unexpected AI output. This is a production-grade pattern for constrained generation.</p>
+</div>
+
+<div class="card teal">
+  <h3>Decision 3 — Pivot-group skeleton for procedural avatar</h3>
+  <p><strong>Challenge:</strong> Three.js AnimationClip/KeyframeTrack works on named bones in skinned meshes. Building a proper rigged skeleton programmatically is complex and fragile.</p>
+  <p><strong>Solution:</strong> Each limb is a child <code>THREE.Group</code> positioned at the joint (shoulder, hip). Rotating the Group rotates the attached arm/leg mesh around that joint — anatomically correct without a bone rig.</p>
+  <p><strong>Benefit:</strong> Simple, readable animation code; easily extensible; no external animation files required.</p>
+</div>
+
+<div class="card green">
+  <h3>Decision 4 — Dual backend (Express + Netlify Functions)</h3>
+  <p><strong>Challenge:</strong> Local development needs a real server for hot-reload and debugging. Production needs serverless for zero-cost hosting.</p>
+  <p><strong>Solution:</strong> The Express route handlers are thin wrappers that can be imported by both the Express app and the Netlify function handlers. The same business logic runs in both environments.</p>
+  <p><strong>Benefit:</strong> No code duplication; straightforward to add new endpoints; identical behaviour in dev and prod.</p>
+</div>
+
+<div class="card red">
+  <h3>Decision 5 — Multimodal input (text + image) in Prototype 1</h3>
+  <p><strong>Challenge:</strong> Real training scenarios involve photographing physical equipment, not typing descriptions.</p>
+  <p><strong>Solution:</strong> The frontend reads uploaded images via <code>FileReader</code> and encodes them as base64. The API endpoint switches between a text-only prompt and a multimodal <code>[image, text]</code> content array depending on which input is provided.</p>
+  <p><strong>Benefit:</strong> Demonstrates the full Claude Vision capability — the same model that identifies a text description can identify a real photograph of a hard hat.</p>
+</div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     8. CHALLENGES & HOW THEY WERE SOLVED
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>8. Challenges &amp; How They Were Solved</h2>
+
+<table>
+  <tr>
+    <th>Challenge</th>
+    <th>What went wrong / Risk</th>
+    <th>Solution</th>
+  </tr>
+  <tr>
+    <td><strong>Claude markdown in JSON responses</strong></td>
+    <td>Claude occasionally wraps JSON in <code>```json</code> fences despite explicit instructions not to</td>
+    <td>Strip leading/trailing markdown fences with regex before <code>JSON.parse()</code>; never rely on Claude always following formatting instructions</td>
+  </tr>
+  <tr>
+    <td><strong>Three.js canvas sizing</strong></td>
+    <td>Canvas doesn't auto-resize; aspect ratio breaks when panel resizes</td>
+    <td><code>ResizeObserver</code> on the container element calls <code>renderer.setSize()</code> + <code>camera.updateProjectionMatrix()</code> on every container size change</td>
+  </tr>
+  <tr>
+    <td><strong>Model memory leaks</strong></td>
+    <td>Loading new 3D models without disposing old ones exhausts GPU memory</td>
+    <td><code>useModelLoader.clearModel()</code> traverses the old model and calls <code>geometry.dispose()</code> + <code>material.dispose()</code> before adding a new one. <code>setCurrentModel()</code> registers procedural models for the same cleanup path</td>
+  </tr>
+  <tr>
+    <td><strong>Animation snap on transition</strong></td>
+    <td>Switching animations jumps abruptly because pose doesn't reset</td>
+    <td><code>resetToNeutral()</code> is called before every new animation; <code>animTime</code> resets to 0 so the new animation always starts from phase 0</td>
+  </tr>
+  <tr>
+    <td><strong>Orbit controls on canvas vs DOM</strong></td>
+    <td>OrbitControls attached to <code>document</code> conflict with page scroll</td>
+    <td>Pass the canvas element directly to <code>new OrbitControls(camera, canvasRef.value)</code> — events are scoped to the canvas only</td>
+  </tr>
+</table>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     9. HOW TO SCALE AT NEXERA
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>9. How to Scale Inside NexEra's Platform</h2>
+
+<div class="two-col">
+  <div class="card blue">
+    <h3>Prototype 1 Scaling Path</h3>
+    <ul>
+      <li><strong>Real GLB assets</strong> — integrate Sketchfab API or Poly.pizza for on-demand asset retrieval; cache GLB files in CDN</li>
+      <li><strong>Expand object library</strong> — add more model keys by adding one builder function; Claude prompt updates automatically</li>
+      <li><strong>Streaming summaries</strong> — use Claude's streaming API to show the educational summary word-by-word as the model loads</li>
+      <li><strong>Multi-object scenes</strong> — place several safety items in one scene for compound training scenarios</li>
+      <li><strong>LMS embed</strong> — wrap the viewer in an iframe with a <code>postMessage</code> API for SCORM/xAPI integration</li>
+    </ul>
+  </div>
+  <div class="card teal">
+    <h3>Prototype 2 Scaling Path</h3>
+    <ul>
+      <li><strong>Mixamo GLB avatar</strong> — drop a rigged character with named animation clips into <code>/public/avatar/character.glb</code>; the <code>useAnimationMixer</code> composable handles clip playback immediately</li>
+      <li><strong>Animation library expansion</strong> — add clips to the VALID_ANIMATIONS list and update Claude prompt; no other code changes needed</li>
+      <li><strong>Voice input</strong> — Web Speech API → same <code>interpretAndAnimate(command)</code> store action</li>
+      <li><strong>Multi-step sequences</strong> — Claude returns an array of animation keys; the mixer queues them with <code>fadeOut</code>/<code>fadeIn</code> transitions</li>
+      <li><strong>Scene awareness</strong> — give Claude a scene manifest (objects present, their positions); it can issue contextually correct commands</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     10. LIMITATIONS
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>10. Current Limitations</h2>
+
+<ul>
+  <li><strong>Procedural geometry only</strong> — models are geometric approximations; a production system needs real textured GLB assets from a 3D library or generation pipeline (e.g. Meshy.ai, Shap-E)</li>
+  <li><strong>No skinned skeleton</strong> — avatar animations are procedural transforms on pivot groups, not true skeletal animation; adding a Mixamo-rigged GLB would give far more realistic motion</li>
+  <li><strong>Fixed animation set</strong> — only 8 animation keys; complex compound actions ("pick up the extinguisher and carry it to the door") would need a sequence system</li>
+  <li><strong>No persistent session</strong> — each API call is stateless; future work could add conversation history for contextual follow-up commands</li>
+  <li><strong>No tests</strong> — unit and integration tests were not in scope for the one-week prototype</li>
+</ul>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     11. QUICK REFERENCE
+══════════════════════════════════════════════════════════════════════════ -->
+<h2>11. Quick Reference</h2>
+
+<div class="two-col">
+  <div>
+    <h3>Setup Commands</h3>
+    <div class="code-block">npm install
+cp .env.example .env
+<span class="cm"># add ANTHROPIC_API_KEY to .env</span>
+npm run dev        <span class="cm"># dev (port 9000 + 3001)</span>
+npm run build      <span class="cm"># production → dist/spa/</span></div>
+  </div>
+  <div>
+    <h3>API Endpoints</h3>
+    <div class="code-block">POST /api/analyze-object
+  body: { text?, imageBase64?, mimeType? }
+  resp: { modelKey, summary }
+
+POST /api/interpret-command
+  body: { command }
+  resp: { animationKey, explanation }
+
+GET  /api/health
+  resp: { status: "ok" }</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Key Files at a Glance</h3>
+  <table>
+    <tr><th>File</th><th>Responsibility</th></tr>
+    <tr><td><code>src/composables/useProceduralModels.js</code></td><td>10 Three.js procedural model builders (the 3D content engine)</td></tr>
+    <tr><td><code>src/composables/useThreeScene.js</code></td><td>Shared WebGL setup, lighting, responsive canvas — used by both prototypes</td></tr>
+    <tr><td><code>src/composables/useModelLoader.js</code></td><td>GLTFLoader with auto-scale, memory cleanup, and model registration</td></tr>
+    <tr><td><code>src/components/proto2/AvatarViewer.vue</code></td><td>Procedural humanoid + 8 time-based animations + GLB fallback path</td></tr>
+    <tr><td><code>server/routes/analyzeObject.js</code></td><td>Claude Vision multimodal handler with enum validation</td></tr>
+    <tr><td><code>server/routes/interpretCommand.js</code></td><td>Claude NLP command → animation key mapper</td></tr>
+    <tr><td><code>netlify/functions/</code></td><td>Serverless mirrors of the Express routes for production</td></tr>
+    <tr><td><code>netlify.toml</code></td><td>Build config + API redirect rules + SPA fallback</td></tr>
+  </table>
+</div>
+
+<div style="margin-top:28px; text-align:center; color:#90a4ae; font-size:9pt;">
+  AI-Powered Interactive Prototypes · NexEra AI Engineering Challenge · April 2026
+</div>
+
+</body>
+</html>
